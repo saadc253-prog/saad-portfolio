@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muhammad Saad Zafar — AI Automation & Prompt Engineering</title>
+<meta name="description" content="Muhammad Saad Zafar — AI Automation & Prompt Engineering Specialist, Founder of Clear Path Digital.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #090c11;
+    --bg-panel: #10151d;
+    --bg-panel-raised: #151b25;
+    --line: #232b38;
+    --text: #e7ecf3;
+    --text-muted: #8b96a8;
+    --accent: #46e0c9;      /* electric teal — "clear" */
+    --accent-2: #6c7bff;    /* electric indigo — "path" */
+    --accent-soft: rgba(70,224,201,0.12);
+    --accent-2-soft: rgba(108,123,255,0.12);
+    --radius: 14px;
+    --maxw: 1080px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3{ font-family:'Space Grotesk', sans-serif; margin:0; letter-spacing:-0.01em; }
+  code, .mono{ font-family:'JetBrains Mono', monospace; }
+  a{ color:inherit; }
+
+  ::selection{ background:var(--accent); color:#04110f; }
+
+  :focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 28px; }
+
+  /* ---------- background ambience ---------- */
+  .noise-glow{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(700px 500px at 12% -5%, rgba(70,224,201,0.10), transparent 60%),
+      radial-gradient(800px 600px at 90% 15%, rgba(108,123,255,0.09), transparent 55%);
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(9,12,17,0.72);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .brand{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1rem; display:flex; align-items:center; gap:8px; }
+  .brand-dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+  .navlinks{ display:flex; gap:28px; list-style:none; margin:0; padding:0; font-size:0.88rem; color:var(--text-muted); }
+  .navlinks a{ text-decoration:none; transition:color .2s; }
+  .navlinks a:hover{ color:var(--text); }
+  @media (max-width:720px){ .navlinks{ display:none; } }
+
+  /* ---------- top scroll progress (mobile-friendly) ---------- */
+  .scrollbar{ position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); z-index:200; width:0%; transition:width .05s linear; }
+
+  /* ---------- layout with side rail path ---------- */
+  .railgrid{ position:relative; display:grid; grid-template-columns:64px 1fr; }
+  @media (max-width:860px){ .railgrid{ grid-template-columns:1fr; } .rail{ display:none; } }
+
+  .rail{ position:relative; }
+  .rail-inner{ position:sticky; top:0; height:100vh; display:flex; justify-content:center; }
+  .rail svg{ height:100%; overflow:visible; }
+  #railpath{ fill:none; stroke:url(#pathGrad); stroke-width:2.5; stroke-linecap:round; }
+  #railpath-track{ fill:none; stroke:var(--line); stroke-width:2.5; stroke-linecap:round; }
+  .waypoint{
+    position:absolute; left:50%; transform:translate(-50%,-50%);
+    width:10px; height:10px; border-radius:50%;
+    background:var(--bg-panel); border:2px solid var(--line);
+    transition:all .35s ease;
+  }
+  .waypoint.lit{
+    background:var(--accent); border-color:var(--accent);
+    box-shadow:0 0 12px 2px var(--accent);
+  }
+
+  main{ position:relative; z-index:1; }
+  section{ padding:96px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--accent);
+    text-transform:uppercase; letter-spacing:0.12em; margin-bottom:14px;
+  }
+  .eyebrow::before{ content:'//'; color:var(--text-muted); }
+
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ---------- hero ---------- */
+  .hero{ padding-top:150px; padding-bottom:90px; border-bottom:1px solid var(--line); }
+  .hero-grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center; }
+  @media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .hero h1{ font-size:clamp(2.1rem, 4.2vw, 3.2rem); line-height:1.08; margin-bottom:16px; }
+  .hero h1 .accent{ background:linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p.lede{ color:var(--text-muted); font-size:1.05rem; max-width:52ch; margin-bottom:28px; }
+
+  .cta-row{ display:flex; flex-wrap:wrap; gap:12px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 20px; border-radius:10px; font-size:0.92rem; font-weight:600;
+    text-decoration:none; border:1px solid var(--line); transition:all .2s ease;
+    cursor:pointer;
+  }
+  .btn-primary{ background:var(--accent); color:#04110f; border-color:var(--accent); }
+  .btn-primary:hover{ box-shadow:0 0 22px rgba(70,224,201,0.45); transform:translateY(-1px); }
+  .btn-ghost{ background:transparent; color:var(--text); }
+  .btn-ghost:hover{ border-color:var(--accent-2); color:var(--accent-2); }
+
+  /* terminal */
+  .terminal{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);
+    overflow:hidden;
+  }
+  .term-bar{ display:flex; align-items:center; gap:6px; padding:11px 14px; border-bottom:1px solid var(--line); background:var(--bg-panel-raised); }
+  .term-dot{ width:10px; height:10px; border-radius:50%; background:#3a4351; }
+  .term-body{ padding:22px 20px 26px; font-family:'JetBrains Mono',monospace; font-size:0.86rem; min-height:210px; }
+  .term-line{ margin-bottom:10px; }
+  .term-prompt{ color:var(--accent); }
+  .term-out{ color:var(--text-muted); }
+  .cursor{ display:inline-block; width:8px; height:1em; background:var(--accent); vertical-align:text-bottom; animation:blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---------- about ---------- */
+  .about-grid{ display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+  @media (max-width:860px){ .about-grid{ grid-template-columns:1fr; } }
+  .stat-strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:28px; }
+  .stat{ background:var(--bg-panel); border:1px solid var(--line); border-radius:12px; padding:18px; text-align:center; }
+  .stat b{ display:block; font-family:'Space Grotesk',sans-serif; font-size:1.5rem; color:var(--accent); }
+  .stat span{ font-size:0.78rem; color:var(--text-muted); }
+
+  /* ---------- skills ---------- */
+  .tabbar{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:26px; }
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--bg-panel);
+    color:var(--text-muted); font-size:0.85rem; cursor:pointer; transition:all .2s ease;
+  }
+  .tab.active{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
+  .chip-panel{ display:none; flex-wrap:wrap; gap:10px; }
+  .chip-panel.active{ display:flex; }
+  .chip{
+    padding:9px 14px; border-radius:8px; background:var(--bg-panel); border:1px solid var(--line);
+    font-size:0.86rem; color:var(--text);
+  }
+  .chip::before{ content:'▹ '; color:var(--accent); }
+
+  /* ---------- clear path digital spotlight ---------- */
+  .spotlight{
+    background:linear-gradient(160deg, var(--bg-panel), var(--bg-panel-raised));
+    border:1px solid var(--line); border-radius:20px; padding:40px;
+  }
+  @media (max-width:600px){ .spotlight{ padding:26px; } }
+  .spot-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+  .spot-head h2{ font-size:1.7rem; }
+  .spot-tag{ font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--accent-2); }
+  .spot-body{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:36px; margin-top:24px; }
+  @media (max-width:860px){ .spot-body{ grid-template-columns:1fr; } }
+  .spot-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:12px; }
+  .spot-list li{ padding-left:22px; position:relative; color:var(--text-muted); font-size:0.94rem; }
+  .spot-list li::before{ content:''; position:absolute; left:0; top:8px; width:8px; height:8px; border-radius:2px; background:var(--accent-2); transform:rotate(45deg); }
+
+  /* chat demo */
+  .chatdemo{ background:var(--bg); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  .chat-head{ display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line); }
+  .chat-avatar{ width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); }
+  .chat-head .title{ font-weight:600; font-size:0.88rem; }
+  .chat-head .sub{ font-size:0.72rem; color:var(--text-muted); }
+  .chat-status{ margin-left:auto; display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--text-muted); }
+  .chat-status i{ width:7px; height:7px; border-radius:50%; background:#46e0a0; box-shadow:0 0 6px #46e0a0; }
+  .chat-body{ padding:16px; min-height:220px; max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+  .msg{ max-width:82%; padding:9px 13px; border-radius:12px; font-size:0.87rem; }
+  .msg.bot{ align-self:flex-start; background:var(--bg-panel); border:1px solid var(--line); border-bottom-left-radius:3px; }
+  .msg.user{ align-self:flex-end; background:var(--accent-soft); border:1px solid rgba(70,224,201,0.3); border-bottom-right-radius:3px; }
+  .chat-input-row{ display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); }
+  .chat-input-row input{
+    flex:1; background:var(--bg-panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px;
+    color:var(--text); font-family:inherit; font-size:0.87rem;
+  }
+  .chat-input-row input::placeholder{ color:var(--text-muted); }
+  .chat-input-row button{
+    background:var(--accent); border:none; border-radius:8px; padding:0 16px; color:#04110f; font-weight:600; cursor:pointer;
+  }
+  .chat-note{ font-size:0.74rem; color:var(--text-muted); padding:0 16px 14px; }
+
+  /* ---------- experience timeline ---------- */
+  .tl{ position:relative; padding-left:28px; }
+  .tl::before{ content:''; position:absolute; left:5px; top:6px; bottom:6px; width:2px; background:var(--line); }
+  .tl-item{ position:relative; padding-bottom:38px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-item::before{
+    content:''; position:absolute; left:-28px; top:4px; width:12px; height:12px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--accent-2); box-shadow:0 0 0 4px var(--bg);
+  }
+  .tl-item.current::before{ border-color:var(--accent); box-shadow:0 0 0 4px var(--bg), 0 0 10px var(--accent); }
+  .tl-role{ font-family:'Space Grotesk',sans-serif; font-size:1.05rem; font-weight:600; }
+  .tl-meta{ font-family:'JetBrains Mono',monospace; font-size:0.76rem; color:var(--accent-2); margin:4px 0 10px; }
+  .tl-item ul{ margin:0; padding-left:18px; color:var(--text-muted); font-size:0.92rem; display:flex; flex-direction:column; gap:6px; }
+
+  /* ---------- education / accomplishments ---------- */
+  .edu-grid{ display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+  @media (max-width:860px){ .edu-grid{ grid-template-columns:1fr; } }
+  .acc-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:16px; }
+  .acc-list li{ padding-left:24px; position:relative; color:var(--text-muted); font-size:0.93rem; }
+  .acc-list li::before{ content:'◆'; position:absolute; left:0; top:1px; color:var(--accent); font-size:0.7rem; }
+  .lang-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .lang-pill{ padding:7px 14px; border:1px solid var(--line); border-radius:999px; font-size:0.82rem; color:var(--text-muted); }
+
+  /* ---------- contact / footer ---------- */
+  footer{ padding:80px 0 48px; }
+  .contact-card{
+    background:linear-gradient(160deg, var(--accent-soft), var(--accent-2-soft));
+    border:1px solid var(--line); border-radius:20px; padding:44px; text-align:center;
+  }
+  .contact-card h2{ font-size:1.9rem; margin-bottom:12px; }
+  .contact-card p{ color:var(--text-muted); max-width:44ch; margin:0 auto 26px; }
+  .contact-row{ display:flex; justify-content:center; flex-wrap:wrap; gap:14px; }
+  .foot-meta{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:56px; font-size:0.8rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace; }
+
+  h2.section-title{ font-size:clamp(1.5rem, 3vw, 2rem); margin-bottom:14px; }
+  p.section-lede{ color:var(--text-muted); max-width:60ch; margin-bottom:30px; }
+</style>
+</head>
+<body>
+
+<div class="noise-glow"></div>
+<div class="scrollbar" id="scrollbar"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="brand-dot"></span> Saad Zafar</div>
+    <ul class="navlinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#clearpath">Clear Path Digital</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="mailto:saadc253@gmail.com" class="btn btn-primary" style="padding:9px 16px; font-size:0.82rem;">Hire me</a>
+  </div>
+</nav>
+
+<div class="railgrid">
+  <div class="rail">
+    <div class="rail-inner">
+      <svg width="20" viewBox="0 0 20 100" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="pathGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#46e0c9"/>
+            <stop offset="100%" stop-color="#6c7bff"/>
+          </linearGradient>
+        </defs>
+        <path id="railpath-track" d="M10,0 L10,100"/>
+        <path id="railpath" d="M10,0 L10,100"/>
+      </svg>
+      <div id="waypoints"></div>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">AI Automation & Prompt Engineering</div>
+          <h1>Turning manual chaos into <span class="accent">automated, 24/7 clarity.</span></h1>
+          <p class="lede">I'm Muhammad Saad Zafar — founder of Clear Path Digital, an AI automation agency, and a hands-on builder of AI chat systems, workflows, and prompt-engineered products for teams that want less busywork and faster answers.</p>
+          <div class="cta-row">
+            <a href="#clearpath" class="btn btn-primary">See Clear Path Digital</a>
+            <a href="#contact" class="btn btn-ghost">Get in touch</a>
+          </div>
+        </div>
+        <div class="terminal reveal" id="termCard">
+          <div class="term-bar"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span></div>
+          <div class="term-body" id="termBody"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap about-grid">
+        <div class="reveal">
+          <div class="eyebrow">About</div>
+          <h2 class="section-title">Business strategy meets AI execution.</h2>
+          <p style="color:var(--text-muted);">I hold a BBA from the University of Central Punjab and spent years in customer support, medical billing, and operations before founding Clear Path Digital. That background is why I don't just build AI systems — I scope them around what a business actually needs: fewer support tickets, faster lead response, and processes that don't depend on someone being awake to run them.</p>
+          <p style="color:var(--text-muted);">Today I split my time between running Clear Path Digital for clients across 10+ industries, and going deep on prompt engineering and model evaluation — the craft behind making an AI system actually reliable, not just impressive in a demo.</p>
+        </div>
+        <div class="reveal">
+          <div class="stat-strip">
+            <div class="stat"><b>10+</b><span>Industries served</span></div>
+            <div class="stat"><b>100%</b><span>Client satisfaction</span></div>
+            <div class="stat"><b>24/7</b><span>Automated support built</span></div>
+          </div>
+          <div class="stat-strip" style="grid-template-columns:1fr 1fr;">
+            <div class="stat"><b>25%</b><span>Fewer order delays (FIRST Mfg.)</span></div>
+            <div class="stat"><b>35%</b><span>Higher customer retention</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="wrap">
+        <div class="eyebrow">Core Skills</div>
+        <h2 class="section-title reveal">Four disciplines, one workflow.</h2>
+        <p class="section-lede reveal">Each client engagement usually touches all four — that's the point of "clear path": nothing gets stuck waiting on a specialist who isn't in the room.</p>
+        <div class="tabbar reveal">
+          <button class="tab active" data-tab="ai">AI & Automation</button>
+          <button class="tab" data-tab="growth">Digital Growth</button>
+          <button class="tab" data-tab="ops">Business & Ops</button>
+          <button class="tab" data-tab="soft">Soft Skills</button>
+        </div>
+        <div class="chip-panel active" data-panel="ai">
+          <span class="chip">AI Chat Support Systems</span>
+          <span class="chip">AI Automation Workflows</span>
+          <span class="chip">Prompt Engineering</span>
+          <span class="chip">AI Model Evaluation</span>
+        </div>
+        <div class="chip-panel" data-panel="growth">
+          <span class="chip">Web Development Oversight (React/Next.js)</span>
+          <span class="chip">SEO Strategy</span>
+          <span class="chip">Social Media Marketing</span>
+          <span class="chip">Graphic Design Direction</span>
+        </div>
+        <div class="chip-panel" data-panel="ops">
+          <span class="chip">Client Strategy & Delivery</span>
+          <span class="chip">Inventory & Order Management</span>
+          <span class="chip">Process Optimization</span>
+          <span class="chip">Cross-Functional Coordination</span>
+        </div>
+        <div class="chip-panel" data-panel="soft">
+          <span class="chip">Client Communication</span>
+          <span class="chip">Leadership & Team Coordination</span>
+          <span class="chip">Analytical Thinking</span>
+          <span class="chip">Time Management</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="clearpath">
+      <div class="wrap">
+        <div class="spotlight reveal">
+          <div class="spot-head">
+            <h2>Clear Path Digital</h2>
+            <span class="spot-tag">Founder / AI Automation Consultant — Feb 2026 – Present</span>
+          </div>
+          <p style="color:var(--text-muted); max-width:65ch;">An AI-powered digital growth agency I founded to bring automation to industries that still run on manual, after-hours-dependent support — starting with dental practices and expanding from there.</p>
+          <div class="spot-body">
+            <ul class="spot-list">
+              <li>Built and deployed AI chat support systems giving clients' customers 24/7 automated engagement, cutting response times and support workload.</li>
+              <li>Designed automation workflows spanning lead handling to customer communication, reducing manual effort across client operations.</li>
+              <li>Own full end-to-end delivery: AI automation, AI chat support, web development, SEO, social media, and graphic design — scoped to each client's goals and budget.</li>
+              <li>Run the entire client lifecycle solo: discovery calls, strategy, execution, reporting, and ongoing optimization from performance data.</li>
+            </ul>
+            <div class="chatdemo">
+              <div class="chat-head">
+                <div class="chat-avatar"></div>
+                <div><div class="title">Clear Path Assistant</div><div class="sub">Demo — the kind of support I build for clients</div></div>
+                <div class="chat-status"><i></i>Online</div>
+              </div>
+              <div class="chat-body" id="chatBody">
+                <div class="msg bot">Hi! I'm a demo of an AI support assistant. Ask me something like "book a call" or "what do you charge?"</div>
+              </div>
+              <div class="chat-input-row">
+                <input id="chatInput" type="text" placeholder="Type a message…" aria-label="Chat demo input">
+                <button id="chatSend">Send</button>
+              </div>
+              <div class="chat-note">Simulated demo — canned responses, not a live model.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="wrap">
+        <div class="eyebrow">Experience</div>
+        <h2 class="section-title reveal">Where the operations sense came from.</h2>
+        <div class="tl reveal" style="margin-top:36px;">
+          <div class="tl-item current">
+            <div class="tl-role">Founder / AI Automation Consultant — Clear Path Digital</div>
+            <div class="tl-meta">Feb 2026 – Present · Remote / Freelance</div>
+            <ul>
+              <li>Serving clients across 10+ industries worldwide at a 100% client satisfaction rate.</li>
+              <li>End-to-end delivery across AI automation, chat support, web dev, SEO, social, and design.</li>
+            </ul>
+          </div>
+          <div class="tl-item">
+            <div class="tl-role">Customer Support Executive & Client Relationship Management — FIRST Manufacturing</div>
+            <div class="tl-meta">Jul 2024 – Feb 2026 · Lahore</div>
+            <ul>
+              <li>Resolved customer inquiries across chat, email, and calls at a 100% satisfaction rate.</li>
+              <li>Streamlined internal workflows, reducing order delays by 25%.</li>
+              <li>Coordinated with factory and warehouse teams for stock availability and timely fulfillment.</li>
+              <li>Onboarded influencer partnerships and helped lift customer retention by 35%.</li>
+            </ul>
+          </div>
+          <div class="tl-item">
+            <div class="tl-role">Medical Biller — Physicians Revenue Group</div>
+            <div class="tl-meta">Aug 2023 – Jul 2024 · Lahore</div>
+            <ul>
+              <li>Processed medical billing and insurance claims with an eye on minimizing errors.</li>
+              <li>Resolved client billing inquiries with empathy, maintaining strong relationships.</li>
+              <li>Navigated insurance complexity to optimize revenue cycle management.</li>
+            </ul>
+          </div>
+          <div class="tl-item">
+            <div class="tl-role">Social Media Marketing Intern — American Lyceum International School</div>
+            <div class="tl-meta">Aug 2022 – Sep 2022 · Lahore</div>
+            <ul>
+              <li>Ran social campaigns across platforms to grow visibility and engagement.</li>
+              <li>Tracked performance with analytics tools to guide optimization.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="wrap edu-grid">
+        <div class="reveal">
+          <div class="eyebrow">Education</div>
+          <h2 class="section-title">Bachelor of Business Administration</h2>
+          <p style="color:var(--text-muted);">University of Central Punjab, Lahore — 2019 to 2023.</p>
+          <div class="lang-row">
+            <span class="lang-pill">English — Fluent</span>
+            <span class="lang-pill">Urdu — Native</span>
+            <span class="lang-pill">Punjabi — Native</span>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="eyebrow">Accomplishments</div>
+          <ul class="acc-list">
+            <li>Led marketing operations for the PAK-CHINA Society at UCP, organizing three major university events for 500+ participants.</li>
+            <li>Served as Management Head of the UCP Sports Society for 2+ years, overseeing two annual sports galas and a university-wide cricket tournament.</li>
+            <li>Volunteered with the UCP Catalyst Society across five+ community service drives and medical camps.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer id="contact">
+      <div class="wrap">
+        <div class="contact-card reveal">
+          <div class="eyebrow" style="justify-content:center;">Get in touch</div>
+          <h2>Have a process that needs a clear path?</h2>
+          <p>Whether it's an AI chat system, an automation workflow, or a prompt that needs to actually hold up in production — I'm open to remote roles and freelance projects.</p>
+          <div class="contact-row">
+            <a href="mailto:saadc253@gmail.com" class="btn btn-primary">saadc253@gmail.com</a>
+            <a href="tel:+923126910304" class="btn btn-ghost">+92 312-6910304</a>
+            <a href="https://linkedin.com/in/saad-zafar-5386521a8" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+          </div>
+        </div>
+        <div class="foot-meta">
+          <span>© <span id="year"></span> Muhammad Saad Zafar</span>
+          <span>Lahore, Pakistan · Open to Remote / Relocation</span>
+          <span>clearpathaibots.com</span>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ---------- terminal typing effect ---------- */
+const lines = [
+  {p:'saad@clearpath:~$', o:'whoami'},
+  {o:'Muhammad Saad Zafar'},
+  {p:'saad@clearpath:~$', o:'role --current'},
+  {o:'AI Automation & Prompt Engineering Specialist'},
+  {p:'saad@clearpath:~$', o:'status'},
+  {o:'Building automated, always-on systems for real businesses.'},
+];
+const termBody = document.getElementById('termBody');
+let li = 0, ci = 0;
+function typeLine(){
+  if(li >= lines.length){
+    const c = document.createElement('span'); c.className='cursor';
+    termBody.appendChild(c);
+    return;
+  }
+  const entry = lines[li];
+  const div = document.createElement('div'); div.className='term-line';
+  let text = '';
+  if(entry.p){ text += `<span class="term-prompt">${entry.p}</span> `; }
+  const outSpan = document.createElement('span'); outSpan.className='term-out';
+  div.innerHTML = text;
+  div.appendChild(outSpan);
+  termBody.appendChild(div);
+  const full = entry.o;
+  const typer = setInterval(()=>{
+    ci++;
+    outSpan.textContent = full.slice(0, ci);
+    if(ci >= full.length){
+      clearInterval(typer);
+      ci = 0; li++;
+      setTimeout(typeLine, 220);
+    }
+  }, 22);
+}
+setTimeout(typeLine, 400);
+
+/* ---------- scroll reveal ---------- */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+}, {threshold:0.14});
+revealEls.forEach(el=>io.observe(el));
+
+/* ---------- top scroll progress bar ---------- */
+const scrollbar = document.getElementById('scrollbar');
+function updateScrollbar(){
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  scrollbar.style.width = scrolled + '%';
+}
+
+/* ---------- rail path + waypoints (desktop) ---------- */
+const railPath = document.getElementById('railpath');
+const waypointsHost = document.getElementById('waypoints');
+const sectionIds = ['about','skills','clearpath','experience','education','contact'];
+let waypointEls = [];
+
+function buildWaypoints(){
+  waypointsHost.innerHTML = '';
+  waypointEls = [];
+  const total = document.body.scrollHeight - window.innerHeight;
+  sectionIds.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const wp = document.createElement('div');
+    wp.className = 'waypoint';
+    const pct = Math.min(99, Math.max(1, (el.offsetTop / (document.body.scrollHeight)) * 100));
+    wp.style.top = pct + '%';
+    waypointsHost.appendChild(wp);
+    waypointEls.push({el, wp, offsetTop: el.offsetTop});
+  });
+}
+
+function updateRail(){
+  const scrollY = window.scrollY;
+  const docH = document.body.scrollHeight - window.innerHeight;
+  const progress = docH > 0 ? Math.min(1, Math.max(0, scrollY / docH)) : 0;
+  railPath.setAttribute('d', `M10,0 L10,${(progress*100).toFixed(2)}`);
+  waypointEls.forEach(({wp, offsetTop})=>{
+    if(scrollY + window.innerHeight*0.6 >= offsetTop){ wp.classList.add('lit'); }
+    else{ wp.classList.remove('lit'); }
+  });
+}
+
+function onScroll(){ updateScrollbar(); updateRail(); }
+window.addEventListener('scroll', onScroll, {passive:true});
+window.addEventListener('resize', ()=>{ buildWaypoints(); updateRail(); });
+window.addEventListener('load', ()=>{ buildWaypoints(); updateRail(); updateScrollbar(); });
+
+/* ---------- skills tabs ---------- */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.chip-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.chip-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+/* ---------- chat demo (canned, client-side only) ---------- */
+const chatBody = document.getElementById('chatBody');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+
+function addMsg(text, who){
+  const m = document.createElement('div');
+  m.className = 'msg ' + who;
+  m.textContent = text;
+  chatBody.appendChild(m);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function botReply(userText){
+  const t = userText.toLowerCase();
+  if(t.includes('book') || t.includes('call') || t.includes('meeting')){
+    return "I'd be glad to set that up. On the real site this connects to a booking flow — for now, email saadc253@gmail.com and I'll confirm a time.";
+  }
+  if(t.includes('price') || t.includes('cost') || t.includes('charge') || t.includes('budget')){
+    return "Pricing depends on scope — a chat system is different from a full automation build. Tell me your goal and I'll scope it, no fixed package pushing.";
+  }
+  if(t.includes('hi') || t.includes('hello') || t.includes('hey')){
+    return "Hey! I'm a demo assistant showing the kind of 24/7 first-response support Clear Path Digital builds for clients.";
+  }
+  if(t.includes('automat') || t.includes('workflow')){
+    return "Automation workflows usually start with mapping where manual effort piles up — lead intake, follow-ups, order updates — then wiring that into one system.";
+  }
+  return "Good question — in a live deployment this would route to the right answer or a human. Want to see how? Reach out at saadc253@gmail.com.";
+}
+
+function handleSend(){
+  const val = chatInput.value.trim();
+  if(!val) return;
+  addMsg(val, 'user');
+  chatInput.value = '';
+  setTimeout(()=>{ addMsg(botReply(val), 'bot'); }, 500);
+}
+chatSend.addEventListener('click', handleSend);
+chatInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') handleSend(); });
+</script>
+
+</body>
+</html>
